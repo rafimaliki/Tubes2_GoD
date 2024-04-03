@@ -29,9 +29,11 @@ func main() {
         source_wiki := c.Query("source")
         target_wiki := c.Query("target")
 
+        // Panggil fungsi disini
+
 		c.JSON(http.StatusOK, gin.H{
-			"source": source_wiki,
-            "target": target_wiki,
+            // Hasil fungsinya taro di sini
+			"result" : "None",
 		})
 
         fmt.Println("source: ", source_wiki)
