@@ -12,8 +12,9 @@ import (
 )
 
 type Wiki struct {
-	Title string
-	URL   string
+	Title  string
+	URL    string
+	Parent *Wiki
 }
 
 // Struktur untuk merepresentasikan queue
@@ -47,8 +48,8 @@ func (q *Queue) IsEmpty() bool {
 }
 
 // Fungsi mengembalikan semua link yang ada pada 1 halaman Wikipedia
-func getAllLinks(inputString string) []Wiki {
-	res, err := http.Get(inputString)
+func getAllLinks(inputWiki Wiki) []Wiki {
+	res, err := http.Get(inputWiki.URL)
 
 	if err != nil {
 		log.Fatal(err)
@@ -75,8 +76,9 @@ func getAllLinks(inputString string) []Wiki {
 			if isValidWikiLink(href) {
 				// Menambahkan tautan ke array links
 				links = append(links, Wiki{
-					Title: s.Text(),
-					URL:   "https://en.wikipedia.org" + href,
+					Parent: &inputWiki,
+					Title:  s.Text(),
+					URL:    "https://en.wikipedia.org" + href,
 				})
 			}
 		}
@@ -156,8 +158,9 @@ func main() {
 	}
 
 	wiki_awal := Wiki{
-		Title: title_awal,
-		URL:   link_awal,
+		Parent: nil,
+		Title:  title_awal,
+		URL:    link_awal,
 	}
 
 	// Membuat queue baru
@@ -165,14 +168,13 @@ func main() {
 
 	// Menambahkan judul awal ke dalam queue
 	queue.Enqueue(wiki_awal)
-
 	// Print judul awal dan akhir
 	fmt.Println("Judul awal: " + title_awal)
 	fmt.Println("Judul akhir: " + title_akhir)
 
 	fmt.Println("Mencari jalur dari " + title_awal + " ke " + title_akhir + "...")
 	for {
-		list_links := getAllLinks(queue.Front().URL)
+		list_links := getAllLinks(queue.Front())
 		for i := 0; i < len(list_links); i++ {
 			queue.Enqueue(list_links[i])
 		}
@@ -184,11 +186,16 @@ func main() {
 		}
 	}
 
-	// fmt.Println("Jalur dari " + title_awal + " ke " + title_akhir + " adalah:")
-	// for i := 0; i < len(queue.items); i++ {
-	// 	fmt.Println(queue.items[i].Title)
-	// 	fmt.Println(queue.items[i].URL)
-	// }
-	// getAllLinks(("https://en.wikipedia.org/wiki/" + strings.ReplaceAll(string_awal, " ", "_")))
-
+	result := queue.Front()
+	list_result := []Wiki{result} // Inisialisasi slice dengan satu elemen
+	for result.Parent != nil {
+		result = *result.Parent                              // Mengambil parent berikutnya
+		list_result = append([]Wiki{result}, list_result...) // Menambahkan parent ke slice
+	}
+	println()
+	println("Jalur dari " + title_awal + " ke " + title_akhir + " adalah:")
+	for i := 0; i < len(list_result); i++ {
+		fmt.Println(list_result[i].Title)
+		fmt.Println(list_result[i].URL)
+	}
 }
