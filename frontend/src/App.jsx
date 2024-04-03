@@ -1,55 +1,46 @@
 import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import axios from "axios";
 
-function App() {
-  const [message, setMessage] = useState("");
-  const [power, setPower] = useState("");
-  const [result, setResult] = useState("");
+import Landing from "./pages/Landing";
+import Game from "./pages/Game";
+import About from "./pages/About";
+import NotFound from "./pages/NotFound";
+import NavBar from "./components/NavBar";
 
-  // check api response
+function App() {
+  const [status, setStatus] = useState(0);
+
+  /* Check if the backend is running */
   useEffect(() => {
     axios
       .get("http://localhost:8080/api/data")
       .then((response) => {
-        setMessage(response.data.message);
+        setStatus(response.data.status);
+        console.log("Backend is running");
       })
       .catch((error) => {
         console.error("Error fetching datas:", error);
-        setMessage("Error fetching data");
       });
   }, []);
 
-  // testing function calc power of two
-  const calculatePowerOfTwo = () => {
-    axios
-      .get(`http://localhost:8080/api/power-of-two?power=${power}`) // contoh pengiriman parameter fungsi ke backend
-      // contoh multiple parameter 'http://localhost:8080/api/power-of-two?base=2&exponent=${power}'
-      .then((response) => {
-        setResult(response.data.result);
-      })
-      .catch((error) => {
-        console.error("Error calculating power:", error);
-        setResult("Error calculating power");
-      });
-  };
-
-  return (
-    <div>
-      <h1>{message}</h1>
-      <h1 className="text-red-500">Calculate Power of Two</h1>
-      <div>
-        <label htmlFor="powerInput">Enter power:</label>
-        <input
-          type="string"
-          id="powerInput"
-          value={power}
-          onChange={(e) => setPower(e.target.value)}
-        />
-        <button onClick={calculatePowerOfTwo}>Calculate</button>
-      </div>
-      {result !== "" && <h2>Result: {result}</h2>}
-    </div>
-  );
+  if (status === 0) {
+    return <>Backend is not running!</>;
+  } else {
+    return (
+      <>
+        <Router>
+          <NavBar />
+          <Routes>
+            <Route exact path="/" element={<Landing />} />
+            <Route path="/game" element={<Game />} />
+            <Route path="/about" element={<About />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Router>
+      </>
+    );
+  }
 }
 
 export default App;
