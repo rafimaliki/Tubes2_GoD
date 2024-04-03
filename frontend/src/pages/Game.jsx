@@ -13,7 +13,20 @@ const Game = () => {
           <InputBox val={source} setVal={setSource} label="Source" />
           <InputBox val={target} setVal={setTarget} label="Target" />
         </div>
-        <SearchButton source={source} target={target} />
+        <div className="flex flex-col mt-5">
+          <SearchButton
+            source={source}
+            target={target}
+            endpoint="search_bfs"
+            label="Breadth First Search"
+          />
+          <SearchButton
+            source={source}
+            target={target}
+            endpoint="search_ids"
+            label="Iterative Deepening Search"
+          />
+        </div>
       </div>
     </div>
   );

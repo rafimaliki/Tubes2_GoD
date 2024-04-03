@@ -8,13 +8,13 @@ const InputBox = ({ val, setVal, label }) => {
 
   return (
     <>
-      <div className="border border-zinc-700 rounded-sm p-4 flex-col justify-center items-center mx-3">
+      <div className="w-[18rem] border border-zinc-700 rounded-sm p-4 flex flex-col justify-center items-center mx-3">
         <p className="mb-2 text-center font-bold">{label}</p>
         <input
           type="text"
           value={val}
           onChange={handleChange}
-          className="rounded-md border border-gray-400 p-1 text-black focus:outline-none"
+          className="w-full rounded-md border border-gray-400 p-1 text-black focus:outline-none"
         />
       </div>
     </>

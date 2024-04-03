@@ -24,7 +24,7 @@ func main() {
         })
     })
 
-    r.GET("/api/search", func(c *gin.Context) {
+    r.GET("/api/search_ids", func(c *gin.Context) {
 
         source_wiki := c.Query("source")
         target_wiki := c.Query("target")
@@ -36,6 +36,24 @@ func main() {
 			"result" : "None",
 		})
 
+        fmt.Println("\033[32mSearch IDS\033[0m")
+        fmt.Println("source: ", source_wiki)
+        fmt.Println("target: ", target_wiki)
+	})
+
+    r.GET("/api/search_bfs", func(c *gin.Context) {
+
+        source_wiki := c.Query("source")
+        target_wiki := c.Query("target")
+
+        // Panggil fungsi disini
+
+		c.JSON(http.StatusOK, gin.H{
+            // Hasil fungsinya taro di sini
+			"result" : "None",
+		})
+
+        fmt.Println("\033[32mSearch BFS\033[0m")
         fmt.Println("source: ", source_wiki)
         fmt.Println("target: ", target_wiki)
 	})
