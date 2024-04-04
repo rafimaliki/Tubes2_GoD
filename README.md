@@ -1,4 +1,4 @@
-# Tubes2_gomugomuno
+# Tubes2_GoD
 Tubes 2 Strategi Algoritma 2024
 
 ## Requirement :
