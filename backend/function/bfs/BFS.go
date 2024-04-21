@@ -178,7 +178,7 @@ func main() {
 		for i := 0; i < len(list_links); i++ {
 			queue.Enqueue(list_links[i])
 		}
-		fmt.Println(queue.Front().Title)
+		// fmt.Println(queue.Front().Title)
 		if queue.Front().Title == title_akhir || queue.Front().URL == link_akhir {
 			break
 		} else {

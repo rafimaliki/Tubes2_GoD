@@ -18,13 +18,13 @@ func main() {
     /* ROUTES */
 
     // Check API Response
-    r.GET("/api/data", func(c *gin.Context) {
+    r.GET("/api/status", func(c *gin.Context) {
         c.JSON(http.StatusOK, gin.H{
             "status": "1",
         })
     })
 
-    r.GET("/api/search_ids", func(c *gin.Context) {
+    r.GET("/api/IDS", func(c *gin.Context) {
 
         source_wiki := c.Query("source")
         target_wiki := c.Query("target")
@@ -32,6 +32,8 @@ func main() {
         // Panggil fungsi disini
 
 		c.JSON(http.StatusOK, gin.H{
+            // "source" : source_wiki,
+            // "target" : target_wiki,
             // Hasil fungsinya taro di sini
 			"result" : "None",
 		})
@@ -41,7 +43,7 @@ func main() {
         fmt.Println("target: ", target_wiki)
 	})
 
-    r.GET("/api/search_bfs", func(c *gin.Context) {
+    r.GET("/api/BFS", func(c *gin.Context) {
 
         source_wiki := c.Query("source")
         target_wiki := c.Query("target")
@@ -49,7 +51,9 @@ func main() {
         // Panggil fungsi disini
 
 		c.JSON(http.StatusOK, gin.H{
-            // Hasil fungsinya taro di sini
+            // "source" : source_wiki,
+            // "target" : target_wiki,
+            // Hasil fungsinya taro di sini 
 			"result" : "None",
 		})
 

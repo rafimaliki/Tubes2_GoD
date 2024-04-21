@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import axios from "axios";
 
-import Landing from "./pages/Landing";
-import Game from "./pages/Game";
+import Solver from "./pages/Solver";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import NavBar from "./components/NavBar";
@@ -11,36 +15,35 @@ import NavBar from "./components/NavBar";
 function App() {
   const [status, setStatus] = useState(0);
 
-  /* Check if the backend is running */
-  useEffect(() => {
-    axios
-      .get("http://localhost:8080/api/data")
-      .then((response) => {
-        setStatus(response.data.status);
-        console.log("Backend is running");
-      })
-      .catch((error) => {
-        console.error("Error fetching datas:", error);
-      });
-  }, []);
+  // useEffect(() => {
+  //   axios
+  //     .get("http://localhost:8080/api/status")
+  //     .then((response) => {
+  //       setStatus(response.data.status);
+  //       console.log("Backend is running");
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching datas:", error);
+  //     });
+  // }, []);
 
-  if (status === 0) {
-    return <>Backend is not running!</>;
-  } else {
-    return (
-      <>
-        <Router>
-          <NavBar />
-          <Routes>
-            <Route exact path="/" element={<Landing />} />
-            <Route path="/game" element={<Game />} />
-            <Route path="/about" element={<About />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Router>
-      </>
-    );
-  }
+  // if (status === 0) {
+  //   return <>Backend is not running!</>;
+  // } else {
+  return (
+    <Router>
+      <div className="app-container min-h-screen">
+        <NavBar />
+        <Routes>
+          <Route exact path="/" element={<Navigate to="/solver" />} />
+          <Route path="/solver" element={<Solver />} />
+          <Route path="/about" element={<About />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
+    </Router>
+  );
+  // }
 }
 
 export default App;
