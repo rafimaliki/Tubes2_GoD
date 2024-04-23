@@ -8,7 +8,7 @@ const NavBar = () => {
   };
 
   return (
-    <nav className="fixed top-0 border-b border-zinc-700 text-xl bg-black text-white w-full flex items-center justify-between p-4">
+    <nav className="border-b border-zinc-700 text-xl bg-black text-white w-full flex items-center justify-between p-4">
       <Link to="/solver" className="font-bold">
         GoD
       </Link>

@@ -18,6 +18,8 @@ const SearchButton = ({ source, target, method }) => {
             // `http://localhost:8080/api/${method}?source=${source}&target=${target}`
           );
           // console.log(response);
+          // alert(response.data.path);
+          alert("Finished!");
         })
         .catch((error) => {
           console.error(error);
