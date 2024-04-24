@@ -1,4 +1,4 @@
-package bfs
+package bfs2
 
 import (
 	"fmt"
@@ -8,7 +8,10 @@ import (
 	"time"
 
 	"github.com/gocolly/colly/v2"
+	"github.com/gocolly/colly/v2/queue"
 )
+
+var limit int = 100
 
 type Wiki struct {
 	Title string
@@ -53,70 +56,76 @@ func isValidWiki(title string) bool {
 	return resp.StatusCode == http.StatusOK
 }
 
-
-var cache = sync.Map{}
-
-
-func scrap(url string, ch chan<-[]WikiTitle, wg *sync.WaitGroup){
-
-    defer wg.Done()  
-
-	fmt.Println("Scraping", url, "...")
-
-
-    if links, ok := cache.Load(url); ok {
-        ch <- links.([]WikiTitle)
-        return
-    }
+func scrap(urls []string, target string) ([]WikiTitle, error) {
+    fmt.Println("Scraping", urls, "...")
+    var wikis []WikiTitle
+    parentLinks := sync.Map{}
 
     c := colly.NewCollector(
         colly.AllowedDomains("en.wikipedia.org"),
     )
 
-    var wikis []WikiTitle
+    q, err := queue.New(limit,
+        &queue.InMemoryQueueStorage{MaxSize: 10000},
+    )
+    if err != nil {
+        return nil, err
+    }
 
-    c.OnHTML("a[href^='/wiki/']:not([href*=':']):not([href*='%']):not([href*='#']):not([href='/wiki/Main_Page'])", func(e *colly.HTMLElement) {
+    for _, url := range urls {
+        q.AddURL("https://en.wikipedia.org/wiki/" + url)
+    }
+    // targetFound := make(chan struct{}, 1)
+
+    c.OnHTML("a[href^='/wiki/']:not([href*=':']):not([href*='%']):not([href*='#']):not([href*='ISO']):not([href='/wiki/Main_Page'])", func(e *colly.HTMLElement) {
         link := strings.TrimPrefix(e.Attr("href"), "/wiki/")
-        wikis = append(wikis, WikiTitle{link, url})
+        parent := strings.TrimPrefix(e.Request.URL.String(), "https://en.wikipedia.org/wiki/")
+        parentLinks.Store(link, parent)
+        wikis = append(wikis, WikiTitle{link, parent})
+
+        if link == target {
+            fmt.Println("Target found")
+            // targetFound <- struct{}{}
+        }
     })
 
-    c.Visit("https://en.wikipedia.org/wiki/" + url)
 
-    cache.Store(url, wikis)
+    // c.OnRequest(func(r *colly.Request) {
+    //     select {
+    //     case <-targetFound:
+    //         r.Abort()
+    //     default:
 
-	ch <- wikis
-	fmt.Println("Scraping", url, "done.")
+    //     }
+    // })
+
+    err = q.Run(c)
+    if err != nil {
+        return nil, err
+    }
+
+    
+    //fmt.Println("Scraping", urls, "done.")
+    return wikis, nil
 }
 
 func findPath(source, target string) ([]Wiki, error) {
     parent := make(map[string]string)
     queue := []string{source}
     found := false
-    var wg sync.WaitGroup
-	ch := make(chan []WikiTitle)
 
-    for !found && len(queue) > 0 {
+    for !found{
         
-        numScraping := min(len(queue), 4)
+        numScraping := min(len(queue), limit)
         currentSet := []string{}
-        for i := 0; i < numScraping; i++ {
-            current := queue[i]
-            currentSet = append(currentSet, current)
-            wg.Add(1)
-            go scrap(current, ch, &wg)
-            //time.Sleep(2 * time.Millisecond)
-        }
 
-        
-        go func() {
-            fmt.Println("Waiting scrap: ", currentSet)
-            wg.Wait()
-            fmt.Println("Scrapping finished: ", currentSet)
-        }()
+		for i := 0; i < numScraping; i++ {
+			currentSet = append(currentSet, queue[i])
+		}
 
+		wikis, _ := scrap(currentSet, target)
         queue = queue[numScraping:]
 
-        wikis := <-ch
         for _, wiki := range wikis {
             if wiki.Title == target {
                 parent[wiki.Title] = wiki.Parent
@@ -130,13 +139,10 @@ func findPath(source, target string) ([]Wiki, error) {
                 fmt.Printf("%d.  %s, \033[32m→\033[0m %s\n", len(parent), wiki.Parent, wiki.Title)
             }
         }
+
+		fmt.Println(len(parent))
         
     }
-
-    go func() {
-        wg.Wait()
-        close(ch)
-    }()
 
     if found {
         pathTitle := []string{target}
@@ -160,11 +166,17 @@ func getURL(title string) string {
 	return "https://en.wikipedia.org/wiki/" + title
 }
 
+func constructURL(title string) string {
+    return strings.ReplaceAll(title, " ", "_")
+}
+
 func Entrypoint(sourceTitle, targetTitle string) ([]Wiki, Duration, error) {
 
 	if isValidWiki(sourceTitle) && isValidWiki(targetTitle) {
 
 		startTime := time.Now()
+        sourceTitle = constructURL(sourceTitle)
+        targetTitle = constructURL(targetTitle)
 		path, err := findPath(sourceTitle, targetTitle)
 		duration := getDuration(time.Since(startTime))
 

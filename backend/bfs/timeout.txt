@@ -43,7 +43,6 @@ func getDuration(duration time.Duration) Duration {
 }
 
 func isValidWiki(title string) bool {
-
 	url := "https://en.wikipedia.org/wiki/" + title
 	resp, err := http.Get(url)
 	if err != nil {
@@ -53,21 +52,22 @@ func isValidWiki(title string) bool {
 	return resp.StatusCode == http.StatusOK
 }
 
-
-var cache = sync.Map{}
-
+// var (
+//     cache = make(map[string][]WikiTitle)
+//     mu    sync.Mutex
+// )
 
 func scrap(url string, ch chan<-[]WikiTitle, wg *sync.WaitGroup){
 
-    defer wg.Done()  
+	defer wg.Done()
 
-	fmt.Println("Scraping", url, "...")
+    // mu.Lock()
+    // defer mu.Unlock()
 
-
-    if links, ok := cache.Load(url); ok {
-        ch <- links.([]WikiTitle)
-        return
-    }
+    // if links, ok := cache[url]; ok {
+    //     ch <- links
+	// 	return
+    // }
 
     c := colly.NewCollector(
         colly.AllowedDomains("en.wikipedia.org"),
@@ -82,78 +82,88 @@ func scrap(url string, ch chan<-[]WikiTitle, wg *sync.WaitGroup){
 
     c.Visit("https://en.wikipedia.org/wiki/" + url)
 
-    cache.Store(url, wikis)
+    // cache[url] = wikis
 
 	ch <- wikis
-	fmt.Println("Scraping", url, "done.")
 }
 
 func findPath(source, target string) ([]Wiki, error) {
-    parent := make(map[string]string)
-    queue := []string{source}
-    found := false
-    var wg sync.WaitGroup
+	parent := make(map[string]string)
+	queue := make([]string, 0, 250000)
+	queue = append(queue, source)
+
+	found := false
+
 	ch := make(chan []WikiTitle)
+	var wg sync.WaitGroup
 
-    for !found && len(queue) > 0 {
-        
-        numScraping := min(len(queue), 4)
-        currentSet := []string{}
-        for i := 0; i < numScraping; i++ {
-            current := queue[i]
-            currentSet = append(currentSet, current)
-            wg.Add(1)
-            go scrap(current, ch, &wg)
-            //time.Sleep(2 * time.Millisecond)
-        }
+	for !found && len(queue) > 0 {
 
-        
-        go func() {
-            fmt.Println("Waiting scrap: ", currentSet)
-            wg.Wait()
-            fmt.Println("Scrapping finished: ", currentSet)
-        }()
+		if len(queue) > 3 {
 
-        queue = queue[numScraping:]
+			fmt.Println("====GOOOOO===")
+			
+			link1 := queue[0]
+			link2 := queue[1]
+			link3 := queue[2]
+			link4 := queue[3]
+			queue = queue[4:]
+	
+			wg.Add(4)
+			go scrap(link1, ch, &wg)
+			go scrap(link2, ch, &wg)
+			go scrap(link3, ch, &wg)
+			go scrap(link4, ch, &wg)
 
-        wikis := <-ch
-        for _, wiki := range wikis {
-            if wiki.Title == target {
-                parent[wiki.Title] = wiki.Parent
-                found = true
-                break
-            }
+			
+			
+		} else {
+			current := queue[0]
+			queue = queue[1:]
+		
+			wg.Add(1)
+			go scrap(current, ch, &wg)
+		}
+		
 
-            if _, ok := parent[wiki.Title]; !ok {
-                parent[wiki.Title] = wiki.Parent
-                queue = append(queue, wiki.Title)
-                fmt.Printf("%d.  %s, \033[32m→\033[0m %s\n", len(parent), wiki.Parent, wiki.Title)
-            }
-        }
-        
-    }
 
-    go func() {
-        wg.Wait()
-        close(ch)
-    }()
+		wikis := <- ch
+		for _, wiki := range wikis {
+			if wiki.Title == target {
+				parent[wiki.Title] = wiki.Parent
+				found = true
+				break
+			}
 
-    if found {
-        pathTitle := []string{target}
-        current := target
-        for current != source {
-            current = parent[current]
-            pathTitle = append([]string{current}, pathTitle...)
-        }
+			if _, ok := parent[wiki.Title]; !ok {
+				parent[wiki.Title] = wiki.Parent
+				queue = append(queue, wiki.Title)
+				fmt.Printf("%d.  %s, \033[32m→\033[0m %s\n", len(parent), wiki.Parent, wiki.Title)
+			}
+		}
+	}
 
-        var path []Wiki
-        for _, title := range pathTitle {
-            path = append(path, Wiki{title, getURL(title)})
-        }
+	wg.Wait() // Wait for all goroutines to finish
 
-        return path, nil
-    }
-    return nil, fmt.Errorf("target Wiki not found")
+	close(ch) 
+
+	if found {
+		path_title := []string{target}
+		current := target
+		for current != source {
+			current = parent[current]
+			path_title = append([]string{current}, path_title...)
+		}
+
+		var path []Wiki
+		for _, title := range path_title {
+			path = append(path, Wiki{title, getURL(title)})
+		}
+
+		return path, nil
+	} else {
+		return nil, fmt.Errorf("target Wiki not found")
+	}
 }
 
 func getURL(title string) string {

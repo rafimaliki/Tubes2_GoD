@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import MethodToggle from "./MethodToggle";
 import SearchButton from "./SearchButton";
 
-const SearchBox = ({ source, target }) => {
+const SearchBox = ({ source, target, setResult }) => {
   const [method, setMethod] = useState("");
 
   return (
@@ -14,7 +14,12 @@ const SearchBox = ({ source, target }) => {
           <MethodToggle label="IDS" method={method} setMethod={setMethod} />
         </div>
         <div className="flex items-center justify-center text-center mb-[2rem]">
-          <SearchButton source={source} target={target} method={method} />
+          <SearchButton
+            source={source}
+            target={target}
+            method={method}
+            setResult={setResult}
+          />
         </div>
       </div>
     </div>
