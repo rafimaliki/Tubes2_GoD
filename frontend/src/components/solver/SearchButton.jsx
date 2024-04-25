@@ -3,6 +3,8 @@ import axios from "axios";
 
 const SearchButton = ({ source, target, method, setResult }) => {
   const [loading, setLoading] = useState(false);
+  const [startTime, setStartTime] = useState(null);
+  const [elapsedTime, setElapsedTime] = useState(0);
 
   const handleClick = () => {
     setResult({
@@ -12,9 +14,15 @@ const SearchButton = ({ source, target, method, setResult }) => {
     });
     if (source && target && method) {
       setLoading(true);
+      setStartTime(new Date());
+      setElapsedTime(0);
       console.log(`Search ${method}`);
       console.log(`Source: ${source}`);
       console.log(`Target: ${target}`);
+
+      const intervalId = setInterval(() => {
+        setElapsedTime((prevElapsedTime) => prevElapsedTime + 0.1);
+      }, 100);
 
       axios
         .get(
@@ -29,6 +37,7 @@ const SearchButton = ({ source, target, method, setResult }) => {
         })
         .finally(() => {
           setLoading(false);
+          clearInterval(intervalId);
         });
     } else {
       console.log("Data belum lengkap");
@@ -38,8 +47,9 @@ const SearchButton = ({ source, target, method, setResult }) => {
   return (
     <>
       {loading && (
-        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-80 text-white z-50">
-          <p className="text-2xl font-bold">FINDING PATH ...</p>
+        <div className=" flex flex-col text-2xl font-bold fixed top-0 left-0 w-full h-full items-center justify-center bg-black bg-opacity-80 text-white z-50">
+          <p>Finding Path ... </p>
+          <p>{elapsedTime.toFixed(1)}s</p>
         </div>
       )}
       <button
