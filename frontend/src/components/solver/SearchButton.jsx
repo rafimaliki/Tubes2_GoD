@@ -3,7 +3,7 @@ import axios from "axios";
 
 const SearchButton = ({ source, target, method, setResult }) => {
   const [loading, setLoading] = useState(false);
-  const [startTime, setStartTime] = useState(null);
+  // const [startTime, setStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
 
   const handleClick = () => {
@@ -14,7 +14,7 @@ const SearchButton = ({ source, target, method, setResult }) => {
     });
     if (source && target && method) {
       setLoading(true);
-      setStartTime(new Date());
+      // setStartTime(new Date());
       setElapsedTime(0);
       console.log(`Search ${method}`);
       console.log(`Source: ${source}`);

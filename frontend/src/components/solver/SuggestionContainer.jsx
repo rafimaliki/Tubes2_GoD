@@ -35,7 +35,6 @@ const SuggestionContainer = ({ val, setVal }) => {
       })
         .then((response) => {
           setResponse(response.data.query.pages);
-          console.log(response.data);
         })
         .catch((error) => {
           console.error(error);

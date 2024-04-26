@@ -1,7 +1,6 @@
 package main
 
 import (
-	"backend/bfs2"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,21 +8,10 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
+	"backend/func/bfs"
+	"backend/func/utils"
 	_ "net/http/pprof"
 )
-
-type Wiki struct {
-	Title string
-	URL   string
-}
-
-type Duration struct {
-    Hours       int
-    Minutes     int
-    Seconds     int
-    Milliseconds int
-}
-
 
 func main() {
 
@@ -33,7 +21,6 @@ func main() {
 
     r := gin.Default()
 
-   
     r.Use(cors.Default())
 
     /* ROUTES */
@@ -50,19 +37,19 @@ func main() {
         // target_wiki := c.Query("target")
 
         fmt.Println("\033[32mSearch IDS\033[0m")
-        path := []Wiki{{"Hololive_Produciton","https://en.wikipedia.org/wiki/Hololive_Production"}, 
-                       {"Taiwan", "https://en.wikipedia.org/wiki/Taiwan"},
-                       {"SARS", "https://en.wikipedia.org/wiki/SARS"},
-                       {"Allergic_bronchopulmonary_aspergillosis","https://en.wikipedia.org/wiki/Allergic_bronchopulmonary_aspergillosis"},
-                       {"Rhizopus_oryzae","https://en.wikipedia.org/wiki/Rhizopus_oryzae"},
+        path := []utils.Wiki{{Title: "Hololive_Produciton",URL: "https://en.wikipedia.org/wiki/Hololive_Production"}, 
+                       {Title: "Taiwan", URL: "https://en.wikipedia.org/wiki/Taiwan"},
+                       {Title: "SARS", URL: "https://en.wikipedia.org/wiki/SARS"},
+                       {Title: "Allergic_bronchopulmonary_aspergillosis",URL: "https://en.wikipedia.org/wiki/Allergic_bronchopulmonary_aspergillosis"},
+                       {Title: "Rhizopus_oryzae",URL: "https://en.wikipedia.org/wiki/Rhizopus_oryzae"},
                       }
-        duration := Duration{0, 0, 2, 12}
-        err := "Error message"
+        duration := utils.Duration{Hours: 0, Minutes: 0, Seconds: 2, Milliseconds: 12}
+        checked := 1000
 
 		c.JSON(http.StatusOK, gin.H{
             "path" : path,
             "duration" : duration,
-            "error" : err,
+            "checked" : checked,
 		})
 
 	})
@@ -73,12 +60,12 @@ func main() {
         target_wiki := c.Query("target")
 
         fmt.Println("\033[32mSearch BFS\033[0m")
-		path, duration, err := bfs2.Entrypoint(source_wiki, target_wiki)
+		path, duration, checked := bfs.EntryPoint(source_wiki, target_wiki)
 
 		c.JSON(http.StatusOK, gin.H{
             "path" : path,
             "duration" : duration,
-            "error" : err,
+            "checked" : checked,
 		})
 	})
 
