@@ -33,8 +33,6 @@ func main() {
 
     r.GET("/api/IDS", func(c *gin.Context) {
 
-        // source_wiki := c.Query("source")
-        // target_wiki := c.Query("target")
 
         source_wiki := c.Query("source")
         target_wiki := c.Query("target")
@@ -65,7 +63,6 @@ func main() {
 		})
 	})
 
-    // Run server
     r.Run(":8080")
 }
 

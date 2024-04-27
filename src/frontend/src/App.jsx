@@ -9,7 +9,6 @@ import {
 
 import Solver from "./pages/Solver";
 import About from "./pages/About";
-import NotFound from "./pages/NotFound";
 import NavBar from "./components/NavBar";
 
 function App() {
@@ -38,7 +37,7 @@ function App() {
             <Route exact path="/" element={<Navigate to="/solver" />} />
             <Route path="/solver" element={<Solver />} />
             <Route path="/about" element={<About />} />
-            <Route path="*" element={<NotFound />} />
+            <Route path="*" element={<Navigate to="/solver" />} />
           </Routes>
         </div>
       </Router>
