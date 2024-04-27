@@ -14,6 +14,8 @@ IDS adalah modifikasi dari Depth-First Search (DFS), tetapi dengan keuntungan da
 Algoritma ini secara berulang-ulang menjalankan DFS dengan batasan kedalaman (depth limit) yang semakin bertambah pada setiap iterasi.
 IDS efektif untuk ruang pencarian yang besar atau tidak terbatas dengan menyatukan keunggulan dari DFS (penggunaan memori yang minimal) dan BFS (penemuan solusi yang dangkal terlebih dahulu).
 </div>
+
+![Web Page Preview](img/page.png)
    
 ## Requirement :
 
@@ -27,11 +29,11 @@ IDS efektif untuk ruang pencarian yang besar atau tidak terbatas dengan menyatuk
 2. masuk ke root dir </br>
    `cd Tubes2_GoD`
 3. setup **BACKEND** </br>
-   `cd backend` </br>
+   `cd src/backend` </br>
    `go run main.go` buat nyalain backend nya </br> kalo berhasil nge run dia bakal ada promptnya dan ada "Listening and serving HTTP on :8080" di terminal
 4. setup **FRONTEND** </br>
    buka terminal baru di root dir repo </br>
-   `cd frontend` </br>
+   `cd src/frontend` </br>
    `npm i` buat install node module (ini cuman sekali aja di awal)</br>
    `npm run dev` buat jalanin front end
 5. akses front end di </br>
