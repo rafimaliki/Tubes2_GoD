@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"backend/func/bfs"
-	"backend/func/utils"
+	"backend/func/ids"
 	_ "net/http/pprof"
 )
 
@@ -36,15 +36,11 @@ func main() {
         // source_wiki := c.Query("source")
         // target_wiki := c.Query("target")
 
-        fmt.Println("\033[32mSearch IDS\033[0m")
-        path := []utils.Wiki{{Title: "Hololive_Produciton",URL: "https://en.wikipedia.org/wiki/Hololive_Production"}, 
-                       {Title: "Taiwan", URL: "https://en.wikipedia.org/wiki/Taiwan"},
-                       {Title: "SARS", URL: "https://en.wikipedia.org/wiki/SARS"},
-                       {Title: "Allergic_bronchopulmonary_aspergillosis",URL: "https://en.wikipedia.org/wiki/Allergic_bronchopulmonary_aspergillosis"},
-                       {Title: "Rhizopus_oryzae",URL: "https://en.wikipedia.org/wiki/Rhizopus_oryzae"},
-                      }
-        duration := utils.Duration{Hours: 0, Minutes: 0, Seconds: 2, Milliseconds: 12}
-        checked := 1000
+        source_wiki := c.Query("source")
+        target_wiki := c.Query("target")
+
+        fmt.Println("\033[32mSearch BFS\033[0m")
+		path, duration, checked := ids.EntryPoint(source_wiki, target_wiki)
 
 		c.JSON(http.StatusOK, gin.H{
             "path" : path,

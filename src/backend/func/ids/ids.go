@@ -28,7 +28,7 @@ var (
 // 	fmt.Println(foundLink)
 // }
 
-func EntryPointIDS(source_wiki, target_wiki string) ([]utils.Wiki, string, int) {
+func EntryPoint(source_wiki, target_wiki string) ([]utils.Wiki, string, int) {
 	var foundLinksCount int
 	start := time.Now()
 	targetURL := getWikiURL(target_wiki)
@@ -51,7 +51,7 @@ func EntryPointIDS(source_wiki, target_wiki string) ([]utils.Wiki, string, int) 
 			path = append([]utils.Wiki{source}, path...)
 
 			found, path, foundCount, err = IDS(source_wiki, targetURL, depth, path)
-			if err != false {
+			if err {
 				return path, utils.FormatDuration(0), -3
 			}
 			fmt.Println("Depth: ", depth)
@@ -85,7 +85,7 @@ func IDS(sourceTitle string, targetURL string, depth int, path []utils.Wiki) (bo
 	links, err := utils.Scrap([]string{sourceTitle}) // Mengubah pemanggilan fungsi Scrap dengan menyediakan slice string dari judul artikel
 	foundCount := len(links)
 
-	if err != false {
+	if err {
 		return false, nil, 0, true
 	}
 
