@@ -3,12 +3,13 @@
 Tubes 2 Strategi Algoritma 2024 : Permainan WikiRace menggunakan Algoritma BFS dan IDS
 
 <div style="text-align: justify;">
-Breadth-First Search (BFS):
+
+**Breadth-First Search (BFS):**
 BFS adalah algoritma pencarian yang mengunjungi simpul (node) terdekat terlebih dahulu sebelum mengunjungi simpul yang lebih jauh.
 Algoritma ini menggunakan pendekatan "level by level", dimulai dari simpul awal (start node), lalu mengunjungi semua simpul tetangga sebelum melanjutkan ke simpul-simpul yang lebih jauh.
 BFS biasanya digunakan ketika mencari solusi yang terdekat atau ketika ingin menemukan jalur terpendek dari simpul awal ke simpul tujuan.
 
-Iterative Deepening Search (IDS):
+**Iterative Deepening Search (IDS):**
 IDS adalah modifikasi dari Depth-First Search (DFS), tetapi dengan keuntungan dari tidak memerlukan memori yang lebih banyak untuk menyimpan informasi untuk seluruh simpul yang belum diperiksa.
 Algoritma ini secara berulang-ulang menjalankan DFS dengan batasan kedalaman (depth limit) yang semakin bertambah pada setiap iterasi.
 IDS efektif untuk ruang pencarian yang besar atau tidak terbatas dengan menyatukan keunggulan dari DFS (penggunaan memori yang minimal) dan BFS (penemuan solusi yang dangkal terlebih dahulu).
