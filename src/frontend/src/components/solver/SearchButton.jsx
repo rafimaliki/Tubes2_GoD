@@ -3,22 +3,17 @@ import axios from "axios";
 
 const SearchButton = ({ source, target, method, setResult }) => {
   const [loading, setLoading] = useState(false);
-  // const [startTime, setStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
 
   const handleClick = () => {
     setResult({
-      path: null,
-      duration: null,
-      error: null,
+      path: [],
+      duration: 0,
+      searched: 0,
     });
     if (source && target && method) {
       setLoading(true);
-      // setStartTime(new Date());
       setElapsedTime(0);
-      console.log(`Search ${method}`);
-      console.log(`Source: ${source}`);
-      console.log(`Target: ${target}`);
 
       const intervalId = setInterval(() => {
         setElapsedTime((prevElapsedTime) => prevElapsedTime + 0.1);
@@ -39,8 +34,6 @@ const SearchButton = ({ source, target, method, setResult }) => {
           setLoading(false);
           clearInterval(intervalId);
         });
-    } else {
-      console.log("Data belum lengkap");
     }
   };
 

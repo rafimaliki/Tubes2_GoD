@@ -3,7 +3,6 @@ import Suggestion from "./Suggestion";
 import axios from "axios";
 
 const SuggestionContainer = ({ val, setVal }) => {
-  // useeffect on variable val
   const [response, setResponse] = React.useState([]);
 
   useEffect(() => {
@@ -37,7 +36,7 @@ const SuggestionContainer = ({ val, setVal }) => {
           setResponse(response.data.query.pages);
         })
         .catch((error) => {
-          console.error(error);
+          // console.log(error);
         });
     }
   }, [val]);
@@ -49,7 +48,13 @@ const SuggestionContainer = ({ val, setVal }) => {
     });
   };
 
-  return <div className=" flex flex-col z-10 -mt-2">{renderSuggestion()}</div>;
+  return (
+    <>
+      {response != [] && (
+        <div className=" flex flex-col z-10 -mt-2">{renderSuggestion()}</div>
+      )}
+    </>
+  );
 };
 
 export default SuggestionContainer;

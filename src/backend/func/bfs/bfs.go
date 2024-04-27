@@ -11,7 +11,7 @@ import (
 
 func BREADTH_FIRST_SEARCH(source, target string) ([]utils.Wiki, int, bool) {
 
-    start_time := time.Now()
+    // start_time := time.Now()
 
     // init map parent
     parent := make(map[string]string)
@@ -75,8 +75,8 @@ func BREADTH_FIRST_SEARCH(source, target string) ([]utils.Wiki, int, bool) {
             fmt.Printf("\033[32mRead     :\033[0m %d\n", len(parent))
             fmt.Printf("\033[32mIn Queue :\033[0m %d\n", len(queue))
             fmt.Printf("\033[32mBacth no :\033[0m %d\n", ((len(parent)-len(queue)+1)/utils.NUM_PARALLELISM)+1)
-            fmt.Printf("\033[32mTime     : \033[0m")
-            fmt.Println(utils.FormatDuration(time.Since(start_time)))
+            // fmt.Printf("\033[32mTime     : \033[0m")
+            // fmt.Println(utils.FormatDuration(time.Since(start_time)))
         }
     }
 
@@ -105,30 +105,33 @@ func BREADTH_FIRST_SEARCH(source, target string) ([]utils.Wiki, int, bool) {
 }
 
 
-func EntryPoint(source_wiki, target_wiki string) ([]utils.Wiki, utils.Duration, int) {
+func EntryPoint(source_wiki, target_wiki string) ([]utils.Wiki, string, int) {
 
     source_wiki = strings.ReplaceAll(source_wiki, " ", "_")
     target_wiki = strings.ReplaceAll(target_wiki, " ", "_")
 
-    if (!(utils.IsValidWiki(source_wiki) && utils.IsValidWiki(target_wiki))) {
-        return []utils.Wiki{}, utils.Duration{}, 0
+    if !utils.IsValidWiki(source_wiki) {
+        return []utils.Wiki{},  utils.FormatDuration(0), -1
+
+    } else if !utils.IsValidWiki(target_wiki) {
+        return []utils.Wiki{},  utils.FormatDuration(0), -2
 
     } else {
 		start_time := time.Now()
-		path, searched, err := BREADTH_FIRST_SEARCH(source_wiki, target_wiki)
+		path, checked, err := BREADTH_FIRST_SEARCH(source_wiki, target_wiki)
 		duration := utils.FormatDuration(time.Since(start_time))
 
 		if err {
-			return []utils.Wiki{}, utils.FormatDuration(0), 0
+			return []utils.Wiki{}, utils.FormatDuration(0), -3
 		}
 
 		fmt.Println("\033[93mPath:\033[0m")
 		for _, wiki := range path {
 			fmt.Println(wiki)
 		}
-		fmt.Println("\033[93mSearched: \033[0m", searched)
+		fmt.Println("\033[93mChecked : \033[0m", checked)
 		fmt.Println("\033[93mDuration: \033[0m", duration)
 
-		return path, duration, searched
+		return path, duration, checked
 	} 
 }

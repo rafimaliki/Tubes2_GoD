@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"runtime"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gocolly/colly/v2"
@@ -15,6 +16,7 @@ import (
 var (
     NUM_PARALLELISM int = 100
     NUM_CPU int = runtime.NumCPU()
+    mu sync.Mutex
 )
 
 type Wiki struct {
@@ -34,13 +36,29 @@ type Duration struct {
     Milliseconds int
 }
 
-func FormatDuration(duration time.Duration) Duration {
-    return Duration{
-        Hours        : int(duration.Hours()),
-        Minutes      : int(duration.Minutes()) % 60,
-        Seconds      : int(duration.Seconds()) % 60,
-        Milliseconds : int(duration.Milliseconds()) % 1000,
+func FormatDuration(duration time.Duration) string {
+    hours := int(duration.Hours())
+    minutes := int(duration.Minutes()) % 60
+    seconds := int(duration.Seconds()) % 60
+    milliseconds := int(duration.Milliseconds()) % 1000
+
+    durationStr := ""
+
+    if hours > 0 {
+        durationStr += fmt.Sprintf("%dh ", hours)
     }
+    if minutes > 0 {
+        durationStr += fmt.Sprintf("%dm ", minutes)
+    }
+    if seconds > 0 {
+        durationStr += fmt.Sprintf("%ds ", seconds)
+    }
+    if milliseconds > 0 {
+        durationStr += fmt.Sprintf("%dms", milliseconds)
+    }
+    durationStr = strings.TrimSpace(durationStr)
+
+    return durationStr
 }
 
 func IsValidWiki(title string) bool {
@@ -93,6 +111,11 @@ func Scrap(urls []string) ([]WikiTitle, bool) {
             link = link[:idx]
         }
         parent, _ := url.PathUnescape(strings.TrimPrefix(e.Request.URL.String(), "https://en.wikipedia.org/wiki/"))
+
+        // lock
+        mu.Lock()
+        defer mu.Unlock()
+        
         wikis = append(wikis, WikiTitle{link, parent})
     })
 

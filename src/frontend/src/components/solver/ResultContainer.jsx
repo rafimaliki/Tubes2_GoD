@@ -3,10 +3,13 @@ import Result from "./Result";
 
 const ResultContainer = ({ result }) => {
   const renderResult = () => {
-    if (result.path != null) {
+    if (result.path.length != 0) {
       return (
         <>
           <p className="font-bold text-xl">RESULT</p>
+          <p className="font-light text-md">
+            {result.checked} wikis checked in {result.duration}
+          </p>
           {result.path.map((wiki, idx) => (
             <Result key={idx} id={idx + 1} title={wiki.Title} url={wiki.URL} />
           ))}

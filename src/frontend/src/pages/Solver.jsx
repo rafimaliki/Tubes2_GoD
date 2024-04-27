@@ -8,9 +8,9 @@ const Solver = () => {
   const [source, setSource] = useState("");
   const [target, setTarget] = useState("");
   const [result, setResult] = useState({
-    path: null,
-    duration: null,
-    error: null,
+    path: [],
+    duration: 0,
+    searched: 0,
   });
 
   return (
@@ -29,7 +29,16 @@ const Solver = () => {
           </div>
         </div>
         <div className="mt-4">
-          <ResultContainer result={result} />
+          {result.checked == -1 && (
+            <p className="text-center text-red-400">Invalid Source Wiki</p>
+          )}
+          {result.checked == -2 && (
+            <p className="text-center text-red-400">Invalid Target Wiki</p>
+          )}
+          {result.checked == -3 && (
+            <p className="text-center text-red-400">Fail Scrapping Wiki</p>
+          )}
+          {result.path.length != 0 && <ResultContainer result={result} />}
         </div>
       </div>
     </div>
