@@ -27,7 +27,7 @@ const SearchBox = ({ val, setVal, label }) => {
           onChange={handleChange}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          className="mb-2 w-full rounded-md border border-gray-400 p-1 text-black focus:outline-none"
+          className="z-30 mb-2 w-full rounded-md border border-gray-400 p-1 text-black focus:outline-none"
         />
         {showSuggestions && <SuggestionContainer val={val} setVal={setVal} />}
       </div>

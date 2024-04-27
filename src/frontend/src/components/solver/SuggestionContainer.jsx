@@ -51,7 +51,9 @@ const SuggestionContainer = ({ val, setVal }) => {
   return (
     <>
       {response != [] && (
-        <div className=" flex flex-col z-10 -mt-2">{renderSuggestion()}</div>
+        <div className=" border border-zinc-700 rounded-xl bg-zinc-900 flex flex-col items-center justify-center z-10 -mt-3 pt-1">
+          {renderSuggestion()}
+        </div>
       )}
     </>
   );
